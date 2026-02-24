@@ -130,10 +130,6 @@ export default function Dashboard() {
               {dark ? "Light Mode" : "Dark Mode"}
             </button>
 
-            <button onClick={() => handleExport("pdf")}>
-              PDF
-            </button>
-
             <button onClick={() => handleExport("excel")}>
               Excel
             </button>
@@ -445,4 +441,5 @@ export const exportExcel = () => {
   });
 
   saveAs(blob, "Loan_MIS_Report.xlsx");
+
 };
