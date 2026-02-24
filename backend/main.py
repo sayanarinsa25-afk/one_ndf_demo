@@ -1,6 +1,5 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from routes.export import router as export_router
+from backend.routes.export import router as export_router
+from backend.routes import dashboard, leads, pipeline, documents, risk, assistant
 
 from routes import dashboard, leads, pipeline, documents, risk, assistant
 
@@ -110,3 +109,4 @@ async def websocket_dashboard(websocket: WebSocket):
 @app.get("/health")
 def health_check():
     return {"status": "ok", "service": "finance-ai-backend"}
+
