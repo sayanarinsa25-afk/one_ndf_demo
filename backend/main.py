@@ -1,13 +1,14 @@
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+
+# ✅ Correct imports for Render production
 from backend.routes.export import router as export_router
 from backend.routes import dashboard, leads, pipeline, documents, risk, assistant
-
-from routes import dashboard, leads, pipeline, documents, risk, assistant
 
 import asyncio
 import json
 
 app = FastAPI(title="Finance AI Backend", version="1.0")
-
 
 # ================= CORS =================
 app.add_middleware(
@@ -18,7 +19,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # ================= ROUTERS =================
 app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
 app.include_router(leads.router, prefix="/leads", tags=["Leads"])
@@ -27,7 +27,6 @@ app.include_router(documents.router, prefix="/documents", tags=["Documents"])
 app.include_router(risk.router, prefix="/risk", tags=["Risk"])
 app.include_router(assistant.router, prefix="/assistant", tags=["AI Assistant"])
 app.include_router(export_router, prefix="/api", tags=["MIS Export"])
-
 
 # ================= ROOT =================
 @app.get("/")
@@ -46,7 +45,6 @@ def root():
         ],
     }
 
-
 # ================= WEBSOCKET MANAGER =================
 class ConnectionManager:
     def __init__(self):
@@ -61,9 +59,7 @@ class ConnectionManager:
             self.active_connections.remove(websocket)
 
     async def broadcast(self, data: dict):
-        """Send live dashboard updates to all clients."""
         dead_connections = []
-
         for connection in self.active_connections:
             try:
                 await connection.send_text(json.dumps(data))
@@ -73,17 +69,11 @@ class ConnectionManager:
         for dc in dead_connections:
             self.disconnect(dc)
 
-
 manager = ConnectionManager()
-
 
 # ================= LIVE DASHBOARD WEBSOCKET =================
 @app.websocket("/ws/dashboard")
 async def websocket_dashboard(websocket: WebSocket):
-    """
-    Sends real-time dashboard updates every few seconds.
-    Used by React dashboard for live fintech demo.
-    """
     await manager.connect(websocket)
 
     try:
@@ -104,9 +94,7 @@ async def websocket_dashboard(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-
 # ================= HEALTH CHECK =================
 @app.get("/health")
 def health_check():
     return {"status": "ok", "service": "finance-ai-backend"}
-
